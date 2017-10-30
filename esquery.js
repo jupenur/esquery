@@ -121,23 +121,29 @@
                         case null:
                         case void 0:
                             return p != null;
+
                         case '=':
                             switch (selector.value.type) {
                                 case 'regexp': return p != null && selector.value.value.test(p);
                                 case 'literal': return p != null && '' + selector.value.value === '' + p;
                                 case 'type': return p != null && selector.value.value === typeof p;
                             }
+                            throw new Error('Unknown selector value type: ' + selector.value.type);
+
                         case '!=':
                             switch (selector.value.type) {
                                 case 'regexp': return p != null && !selector.value.value.test(p);
                                 case 'literal': return p != null && '' + selector.value.value !== '' + p;
                                 case 'type': return p != null && selector.value.value !== typeof p;
                             }
+                            throw new Error('Unknown selector value type: ' + selector.value.type);
+
                         case '<=': return p != null && p <= selector.value.value;
                         case '<': return p != null && p < selector.value.value;
                         case '>': return p != null && p > selector.value.value;
                         case '>=': return p != null && p >= selector.value.value;
                     }
+                    throw new Error('Unknown selector operator: ' + selector.operator);
 
                 case 'sibling':
                     return matches(node, selector.right, ancestry) &&
@@ -180,6 +186,7 @@
                             return node.type.slice(-10) === 'Expression' ||
                                 node.type === 'Literal' ||
                                 node.type === 'Identifier';
+
                         case 'function':
                             return node.type.slice(0, 8) === 'Function' ||
                                 node.type === 'ArrowFunctionExpression';
